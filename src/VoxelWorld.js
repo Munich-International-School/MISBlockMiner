@@ -301,6 +301,19 @@ export function createTextureAtlas() {
     drawRect(3, 1, '#708090'); // Bottom
     drawRect(3, 2, '#708090'); // Top
 
+    // --- VOXEL 4: WOOD ---
+    drawRect(4, 0, '#654321'); // Side
+    drawRect(4, 1, '#654321'); // Bottom
+    drawRect(4, 2, '#654321'); // Top
+    // Add rings to top
+    ctx.fillStyle = '#543210';
+    ctx.fillRect(4 * tileSize + 10, 2 * tileSize + 10, tileSize - 20, tileSize - 20);
+
+    // --- VOXEL 5: OBSIDIAN ---
+    drawRect(5, 0, '#1a0033'); // Side
+    drawRect(5, 1, '#1a0033'); // Bottom
+    drawRect(5, 2, '#1a0033'); // Top
+
     const texture = new THREE.CanvasTexture(canvas);
     texture.magFilter = THREE.NearestFilter;
     texture.minFilter = THREE.NearestFilter;
