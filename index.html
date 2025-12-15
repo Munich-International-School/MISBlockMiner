@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BlockMiner 3D</title>
+    <link rel="stylesheet" href="style.css">
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+</head>
+<body>
+    <div id="ui">
+        <div id="crosshair">+</div>
+        <div id="instructions">
+            <h1>BlockMiner 3D</h1>
+            <p>Click to Play</p>
+            <p>WASD to Move | SPACE to Jump</p>
+            <p>Left Click: Mine | Right Click: Place</p>
+            <p>1-5: Select Block</p>
+        </div>
+    </div>
+    <script type="module" src="main.js"></script>
+</body>
+</html>
