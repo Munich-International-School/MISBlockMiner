@@ -54,35 +54,32 @@ export class Player {
         // 1. Move X
         const dx = this.velocity.x * delta;
         this.controls.moveRight(-dx); // Note: PointerLockControls x is lateral
-        // Collision disabled for debugging
-        // if (this.checkCollision()) {
-        //     this.controls.moveRight(dx); // Undo
-        //     this.velocity.x = 0;
-        // }
+        // Check collision
+        if (this.checkCollision()) {
+            this.controls.moveRight(dx); // Undo
+            this.velocity.x = 0;
+        }
 
         // 2. Move Z
         const dz = this.velocity.z * delta;
         this.controls.moveForward(-dz);
-        // if (this.checkCollision()) {
-        //     this.controls.moveForward(dz); // Undo
-        //     this.velocity.z = 0;
-        // }
+        // Check collision
+        if (this.checkCollision()) {
+            this.controls.moveForward(dz); // Undo
+            this.velocity.z = 0;
+        }
 
         // 3. Move Y
         this.controls.getObject().position.y += this.velocity.y * delta;
-        // if (this.checkCollision()) {
-        //     this.controls.getObject().position.y -= this.velocity.y * delta; // Undo
+        if (this.checkCollision()) {
+            this.controls.getObject().position.y -= this.velocity.y * delta; // Undo
 
-        //     // If falling and hit something, we are on ground
-        //     if (this.velocity.y < 0) {
-        //         this.canJump = true;
-        //     }
-        //     this.velocity.y = 0;
-        // }
-    }
-
-    get debugVelocity() {
-        return this.velocity;
+            // If falling and hit something, we are on ground
+            if (this.velocity.y < 0) {
+                this.canJump = true;
+            }
+            this.velocity.y = 0;
+        }
     }
 
     checkCollision() {
