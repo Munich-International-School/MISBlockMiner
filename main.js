@@ -12,8 +12,13 @@ let inputManager;
 let prevTime = performance.now();
 const cellSize = 32;
 
-init();
-animate();
+try {
+    init();
+    animate();
+} catch (e) {
+    console.error(e);
+    alert("Game Error: " + e.message);
+}
 
 function init() {
     // 1. Scene
