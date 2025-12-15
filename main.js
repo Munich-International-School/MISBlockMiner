@@ -256,7 +256,6 @@ function animate() {
             const chunksLoaded = Object.keys(chunkMap).length;
             const vel = player.debugVelocity;
             info.innerHTML = `Pos: ${pos.x.toFixed(1)}, ${pos.y.toFixed(1)}, ${pos.z.toFixed(1)}<br>
-                             Vel Y: ${vel ? vel.y.toFixed(1) : '?'}<br>
                              Chunks: ${chunksLoaded}<br>
                              Input: ${JSON.stringify(inputManager.state)}`;
         }
