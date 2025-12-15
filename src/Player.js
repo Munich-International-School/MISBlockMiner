@@ -101,7 +101,15 @@ export class Player {
 
         // Helper to check one point
         const isSolid = (px, py, pz) => {
-            return this.voxelWorld.getVoxel(px, py, pz) !== 0; // 0 is air
+            const vx = Math.floor(px);
+            const vy = Math.floor(py);
+            const vz = Math.floor(pz);
+            const voxel = this.voxelWorld.getVoxel(vx, vy, vz);
+            if (voxel !== 0) {
+                this.lastHit = `Hit: ${vx},${vy},${vz} (Val:${voxel})`;
+                return true;
+            }
+            return false;
         };
 
         // Floor level (just below feet to catch ground? No, we moved. Check inside body.)
@@ -128,5 +136,9 @@ export class Player {
         }
 
         return false;
+    }
+
+    get debugHit() {
+        return this.lastHit || "None";
     }
 }
