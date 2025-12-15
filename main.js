@@ -11,6 +11,8 @@ let player;
 let inputManager;
 let prevTime = performance.now();
 const cellSize = 32;
+const chunks = {};
+let currentBlockType = 3;
 
 try {
     init();
@@ -165,15 +167,12 @@ function init() {
     window.addEventListener('resize', onWindowResize);
 }
 
-let currentBlockType = 3; // Default to stone
 window.addEventListener('keydown', (e) => {
     if (e.key >= '1' && e.key <= '3') {
         currentBlockType = parseInt(e.key);
     }
 });
 
-
-const chunks = {};
 
 function updateVoxelGeometry(x, y, z) {
     const chunkId = `${x},${y},${z}`;
