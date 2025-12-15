@@ -5,7 +5,7 @@ import { Player } from './src/Player.js';
 import { InputManager } from './src/InputManager.js';
 
 // --- Global Variables ---
-const VERSION = "1.2";
+const VERSION = "1.3";
 console.log(`BlockMiner v${VERSION} Initializing...`);
 
 let camera, scene, renderer, controls;
@@ -16,6 +16,14 @@ let prevTime = performance.now();
 const cellSize = 32;
 const chunkMap = {};
 let currentBlockType = 3;
+
+const blockNames = {
+    1: "Dirt",
+    2: "Grass",
+    3: "Stone",
+    4: "Wood",
+    5: "Obsidian"
+};
 
 try {
     init();
@@ -188,14 +196,6 @@ function init() {
 
     updateBlockUI();
 }
-
-const blockNames = {
-    1: "Dirt",
-    2: "Grass",
-    3: "Stone",
-    4: "Wood",
-    5: "Obsidian"
-};
 
 window.addEventListener('keydown', (e) => {
     if (e.key >= '1' && e.key <= '5') {
