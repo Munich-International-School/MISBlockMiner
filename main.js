@@ -5,13 +5,16 @@ import { Player } from './src/Player.js';
 import { InputManager } from './src/InputManager.js';
 
 // --- Global Variables ---
+const VERSION = "1.2";
+console.log(`BlockMiner v${VERSION} Initializing...`);
+
 let camera, scene, renderer, controls;
 let voxelWorld;
 let player;
 let inputManager;
 let prevTime = performance.now();
 const cellSize = 32;
-const chunks = {};
+const chunkMap = {};
 let currentBlockType = 3;
 
 try {
@@ -19,7 +22,7 @@ try {
     animate();
 } catch (e) {
     console.error(e);
-    alert("Game Error: " + e.message);
+    alert(`Game Error (v${VERSION}): ` + e.message);
 }
 
 function init() {
@@ -178,7 +181,7 @@ function updateVoxelGeometry(x, y, z) {
     const chunkId = `${x},${y},${z}`;
 
     // Remove existing chunk mesh
-    let chunk = chunks[chunkId];
+    let chunk = chunkMap[chunkId];
     if (chunk) {
         scene.remove(chunk);
         chunk.geometry.dispose();
@@ -188,7 +191,7 @@ function updateVoxelGeometry(x, y, z) {
 
     // If no geometry (empty chunk), stop here
     if (positions.length === 0) {
-        delete chunks[chunkId];
+        delete chunkMap[chunkId];
         return;
     }
 
@@ -220,7 +223,7 @@ function updateVoxelGeometry(x, y, z) {
     mesh.castShadow = true;
     mesh.receiveShadow = true;
     scene.add(mesh);
-    chunks[chunkId] = mesh;
+    chunkMap[chunkId] = mesh;
 }
 
 function onWindowResize() {
