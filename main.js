@@ -69,9 +69,13 @@ function init() {
     for (let y = 0; y < cellSize; ++y) {
         for (let z = 0; z < cellSize; ++z) {
             for (let x = 0; x < cellSize; ++x) {
+                // Bedrock floor
+                if (y === 0) {
+                    voxelWorld.setVoxel(x, y, z, 3);
+                    continue;
+                }
                 const height = (Math.sin(x / 4) + Math.cos(z / 4)) * 2 + 5; // Simple waves
                 if (y < height) {
-                    // Decide block type
                     voxelWorld.setVoxel(x, y, z, y < height - 1 ? 1 : 2); // 1=Dirt, 2=Grass
                 }
             }
@@ -239,7 +243,22 @@ function animate() {
     const delta = (time - prevTime) / 1000;
     prevTime = time;
 
-    player.update(delta, inputManager.state);
+    // Safety Cap on Delta to prevent huge jumps
+    const safeDelta = Math.min(delta, 0.1);
+
+    if (player) { // Ensure player is init
+        player.update(safeDelta, inputManager.state);
+
+        // Debug Info Update
+        const info = document.getElementById('debug-info');
+        if (info) {
+            const pos = controls.getObject().position;
+            const chunksLoaded = Object.keys(chunkMap).length;
+            info.innerHTML = `Pos: ${pos.x.toFixed(1)}, ${pos.y.toFixed(1)}, ${pos.z.toFixed(1)}<br>
+                             Chunks: ${chunksLoaded}<br>
+                             Input: ${JSON.stringify(inputManager.state)}`;
+        }
+    }
 
     renderer.render(scene, camera);
 }
