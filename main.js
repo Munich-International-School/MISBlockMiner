@@ -120,50 +120,60 @@ function init() {
             start.setFromMatrixPosition(camera.matrixWorld);
             end.set(0, 0, 1).unproject(camera);
 
-            // The logic above for "unproject" with (0,0,1) gives a point on the far plane. 
-            // Better to get direction from camera.
-
             const direction = new THREE.Vector3();
             camera.getWorldDirection(direction);
-            end.copy(start).add(direction.multiplyScalar(10)); // 10 units range
+            end.copy(start).add(direction.multiplyScalar(10));
 
             const intersection = voxelWorld.intersectRay(start, end);
             if (intersection) {
                 const pos = intersection.position;
+                let targetPos = [...pos]; // Position of the block to modify
+
                 if (event.button === 0) {
                     // Left Click: Mine
-                    voxelWorld.setVoxel(pos[0], pos[1], pos[2], 0);
-                    updateVoxelGeometry(pos[0], pos[1], pos[2]);
+                    voxelWorld.setVoxel(targetPos[0], targetPos[1], targetPos[2], 0);
                 } else if (event.button === 2) {
                     // Right Click: Place
                     const normal = intersection.normal;
-                    const newPos = [pos[0] + normal[0], pos[1] + normal[1], pos[2] + normal[2]];
+                    targetPos = [pos[0] + normal[0], pos[1] + normal[1], pos[2] + normal[2]];
 
-                    // Don't place inside player
+                    // Don't place inside player (Simple box check)
                     const playerPos = new THREE.Vector3();
                     playerPos.copy(controls.getObject().position);
-                    // Simple check: is new block intserecting player bbox?
-                    // Player radius 0.3, height 1.7. 
-                    // Block is 1x1x1 at newPos (integer coords).
-                    // Ideally use AABB check. For now, just simplistic distance check to center?
-                    // Let's rely on simple box check.
-
-                    // Helper: AABB vs AABB
                     const pBox = new THREE.Box3();
                     pBox.setFromCenterAndSize(
-                        new THREE.Vector3(playerPos.x, playerPos.y - 0.85, playerPos.z), // Center of player (eye is at top)
+                        new THREE.Vector3(playerPos.x, playerPos.y - 0.85, playerPos.z),
                         new THREE.Vector3(0.6, 1.7, 0.6)
                     );
 
                     const bBox = new THREE.Box3();
-                    bBox.min.set(newPos[0], newPos[1], newPos[2]);
-                    bBox.max.set(newPos[0] + 1, newPos[1] + 1, newPos[2] + 1);
+                    bBox.min.set(targetPos[0], targetPos[1], targetPos[2]);
+                    bBox.max.set(targetPos[0] + 1, targetPos[1] + 1, targetPos[2] + 1);
 
-                    if (!pBox.intersectsBox(bBox)) {
-                        voxelWorld.setVoxel(newPos[0], newPos[1], newPos[2], currentBlockType);
-                        updateVoxelGeometry(newPos[0], newPos[1], newPos[2]);
-                    }
+                    if (pBox.intersectsBox(bBox)) return; // Abort if intersecting
+
+                    voxelWorld.setVoxel(targetPos[0], targetPos[1], targetPos[2], currentBlockType);
                 }
+
+                // Update the chunk containing the block
+                const chunkX = Math.floor(targetPos[0] / cellSize);
+                const chunkY = Math.floor(targetPos[1] / cellSize);
+                const chunkZ = Math.floor(targetPos[2] / cellSize);
+
+                updateVoxelGeometry(chunkX, chunkY, chunkZ);
+
+                // Update neighbors if on border (Simple brute force for MVP: update all neighbors? No, too slow. Just check.)
+                // Actually, let's just implement correct border checks.
+                const voxelX = THREE.MathUtils.euclideanModulo(targetPos[0], cellSize);
+                const voxelY = THREE.MathUtils.euclideanModulo(targetPos[1], cellSize);
+                const voxelZ = THREE.MathUtils.euclideanModulo(targetPos[2], cellSize);
+
+                if (voxelX === 0) updateVoxelGeometry(chunkX - 1, chunkY, chunkZ);
+                if (voxelX === cellSize - 1) updateVoxelGeometry(chunkX + 1, chunkY, chunkZ);
+                if (voxelY === 0) updateVoxelGeometry(chunkX, chunkY - 1, chunkZ);
+                if (voxelY === cellSize - 1) updateVoxelGeometry(chunkX, chunkY + 1, chunkZ);
+                if (voxelZ === 0) updateVoxelGeometry(chunkX, chunkY, chunkZ - 1);
+                if (voxelZ === cellSize - 1) updateVoxelGeometry(chunkX, chunkY, chunkZ + 1);
             }
         }
     };
