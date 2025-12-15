@@ -180,15 +180,36 @@ function init() {
 
     document.addEventListener('mouseup', onMouseUp);
 
+    // Prevent context menu for Right Click interaction
+    window.addEventListener('contextmenu', e => e.preventDefault());
+
     // Resize Handler
     window.addEventListener('resize', onWindowResize);
+
+    updateBlockUI();
 }
 
+const blockNames = {
+    1: "Dirt",
+    2: "Grass",
+    3: "Stone",
+    4: "Wood",
+    5: "Obsidian"
+};
+
 window.addEventListener('keydown', (e) => {
-    if (e.key >= '1' && e.key <= '3') {
+    if (e.key >= '1' && e.key <= '5') {
         currentBlockType = parseInt(e.key);
+        updateBlockUI();
     }
 });
+
+function updateBlockUI() {
+    const el = document.getElementById('block-indicator');
+    if (el) {
+        el.innerText = `Selected: ${blockNames[currentBlockType] || 'Unknown'}`;
+    }
+}
 
 
 function updateVoxelGeometry(x, y, z) {
@@ -259,17 +280,7 @@ function animate() {
     if (player) { // Ensure player is init
         player.update(safeDelta, inputManager.state);
 
-        // Debug Info Update
-        const info = document.getElementById('debug-info');
-        if (info) {
-            const pos = controls.getObject().position;
-            const chunksLoaded = Object.keys(chunkMap).length;
-            const vel = player.debugVelocity;
-            info.innerHTML = `Pos: ${pos.x.toFixed(1)}, ${pos.y.toFixed(1)}, ${pos.z.toFixed(1)}<br>
-                             Col: ${player.debugHit}<br>
-                             Chunks: ${chunksLoaded}<br>
-                             Input: ${JSON.stringify(inputManager.state)}`;
-        }
+        // Debug Info Removed
     }
 
     renderer.render(scene, camera);
